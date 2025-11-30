@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <style>
+        #results {
+            margin-top: 10px;
+        }
+        .user {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .user:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" name="search" id="search" placeholder="Search...">
+    <div id="results"></div>
+
+    <script>
+        const searchInput = document.getElementById('search');
+        const resultsDiv = document.getElementById('results');
+
+        searchInput.addEventListener('input', function() {
+            const username = searchInput.value;
+            const postData = { username };
+
+            fetch('search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(postData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear previous results
+                resultsDiv.innerHTML = '';
+
+                // List all users
+                data.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'user';
+                    userDiv.textContent = user.username; // or user.fullName, etc.
+                    
+                    // Click event
+                    userDiv.addEventListener('click', () => {
+                        alert(`Clicked on ${user.username}`);
+                        window.location.href = `/chat?user=${user.username}`;
+                    });
+
+                    resultsDiv.appendChild(userDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
